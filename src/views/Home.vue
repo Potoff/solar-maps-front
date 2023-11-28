@@ -1,8 +1,9 @@
 <script setup>
 import leaflet from 'leaflet';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, shallowRef } from 'vue';
 import GeoErrorModal from '../components/GeoErrorModal.vue';
 import MapFeatures from '../components/MapFeatures.vue';
+import { toRaw } from 'vue';
 
 let coords = ref(null);
 let fetchCoords = ref(null);
@@ -31,13 +32,13 @@ const getGeoLocation = () => {
 const setCoords = (position) => {
   fetchCoords.value = null;
   coords.value = [position.coords.latitude, position.coords.longitude];
-  map.setView(coords.value, 10);
-  geoMarker.value = leaflet.marker(coords.value).addTo(map);
   let sessionCoords = {
     lat: position.coords.latitude,
     lng: position.coords.longitude
   }
   sessionStorage.setItem('coords', JSON.stringify(sessionCoords));
+  map.setView(coords.value, 10);
+  geoMarker.value = leaflet.marker(coords.value).addTo(map);
 };
 const getLocError = (error) => {
   fetchCoords.value = null;
@@ -52,22 +53,24 @@ const closeGeoError = () => {
 
 onMounted(() => {
 
-  map = leaflet.map('map').setView([45.766667, 4.834395], 8);
+map = leaflet.map('map', {zoomAnimation: false}).setView([45.766667, 4.834395], 8);
 
-  leaflet.tileLayer(`https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${import.meta.env.VITE_APIKEY}`, {
-    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-      '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ',
-    maxZoom: 20,
-    id: 'mapbox/satellite-streets-v12',
-    tileSize: 512,
-    zoomOffset: -1,
-    accessToken: import.meta.env.VUE_APP_APIKEY
-  }).addTo(map);
+leaflet.tileLayer(`https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${import.meta.env.VITE_APIKEY}`, {
+  attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+    '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ',
+  maxZoom: 20,
+  id: 'mapbox/satellite-streets-v12',
+  tileSize: 512,
+  zoomOffset: -1,
+  accessToken: import.meta.env.VUE_APP_APIKEY
+}).addTo(map);
 
 
-  getGeoLocation();
+getGeoLocation();
 
 });
+
+
 
 
 </script>
