@@ -12,14 +12,20 @@ let geoErrorText = ref(null);
 let map;
 
 const getGeoLocation = () => {
-  if (sessionStorage.getItem('coords')) {
-    coords.value = JSON.parse(sessionStorage.getItem('coords'))
-    map.setView(coords.value, 10)
-    geoMarker.value = leaflet.marker(coords.value).addTo(map)
+  if (!coords.value) {
+    if (sessionStorage.getItem('coords')) {
+      coords.value = JSON.parse(sessionStorage.getItem('coords'))
+      map.setView(coords.value, 10)
+      geoMarker.value = leaflet.marker(coords.value).addTo(map)
+      return;
+    }
+    fetchCoords.value = true;
+    navigator.geolocation.getCurrentPosition(setCoords, getLocError)
     return;
   }
-  fetchCoords.value = true;
-  navigator.geolocation.getCurrentPosition(setCoords, getLocError)
+  coords.value = null;
+  sessionStorage.removeItem('coords');
+  map.removeLayer(geoMarker.value);
 };
 
 const setCoords = (position) => {
@@ -69,7 +75,7 @@ onMounted(() => {
 <template>
   <div class="h-screen relative">
     <GeoErrorModal v-if="geoError" :geoErrorText="geoErrorText" @closeGeoError="closeGeoError" />
-    <MapFeatures :coords="coords" :fetchCoords="fetchCoords" @click="getGeoLocation" />
+    <MapFeatures :coords="coords" :fetchCoords="fetchCoords" @getGeoLocation="getGeoLocation" />
     <div id="map" class="h-full z-[1]">
     </div>
   </div>
