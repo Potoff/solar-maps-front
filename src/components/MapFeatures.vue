@@ -8,16 +8,21 @@
                 <i class="fa-solid fa-magnifying-glass"></i>
             </div>
             <div class="absolute mt-2 w-full">
-                <div class="h-[200px] overflow-scroll bg-white rounded-md">
-                    <div class="px-4 py-2 flex gap-x-2 cursor-pointer hover:bg-slate-600 hover:text-white">
-                        <i class="fa-solid fa-map-marker-alt text-slate-600"></i>
-                        <p>ok</p>
+                <!--Results-->
+                <div v-if="searchQuery" class="h-[200px] overflow-scroll bg-white rounded-md">
+                    <LoadingSpinner v-if="!searchData" />
+                    <div v-else>
+                        <div class="px-4 py-2 flex gap-x-2 cursor-pointer hover:bg-slate-600 hover:text-white"
+                            v-for="(result, index) in searchData" :key="index" @click="selectResult(result)">
+                            <i class="fa-solid fa-map-marker-alt text-slate-600"></i>
+                            <p class="text-xs">{{ result.place_name_fr }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="px-4 flex items-center shadow-lg rounded-md min-h-[45px]" :class="[props.coords ? 'bg-gray-600' : 'bg-white']"
-            @click="$emit('getGeoLocation')">
+        <div class="px-4 flex items-center shadow-lg rounded-md min-h-[45px]"
+            :class="[props.coords ? 'bg-gray-600' : 'bg-white']" @click="$emit('getGeoLocation')">
             <i class="fa-solid fa-location-arrow text-white text-[18px]"
                 :class="[props.coords ? 'text-white' : 'text-gray-600', props.fetchCoords ? 'animate-ping' : '']"></i>
         </div>
@@ -27,17 +32,22 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import LoadingSpinner from './LoadingSpinner.vue';
 
 let searchQuery = ref(null);
 let searchData = ref(null);
 let queryTimeout = ref(null);
+let selectedResult = ref(null);
 
 
 let props = defineProps(['coords', 'fetchCoords'])
+let emit = defineEmits(['plotResult'])
+
 
 const search = () => {
     clearTimeout(queryTimeout.value);
-    queryTimeout.value = setTimeout( async () => {
+    searchData.value = null;
+    queryTimeout.value = setTimeout(async () => {
         if (searchQuery.value !== '') {
             let params = new URLSearchParams({
                 fuzzyMatch: 'true',
@@ -45,12 +55,16 @@ const search = () => {
                 limit: 10,
                 proximity: props.coords ? `${props.coords.lng},${props.coords.lat}` : null,
             });
-            let getData = await axios.get(`http://localhost:3000/api/search/${searchQuery.value}?${params}`);
+            let getData = await axios.get(`https://w7lolfzqqf.execute-api.us-east-2.amazonaws.com/dev/api/search/${searchQuery.value}?${params}`);
             searchData.value = getData.data.features;
             console.log(searchData.value);
         }
-    }, 500);
+    }, 100);
 }
 
+const selectResult = (result) => {
+    selectedResult.value = result;
+    emit('plotResult', result.geometry.coordinates);
+}
 
 </script>

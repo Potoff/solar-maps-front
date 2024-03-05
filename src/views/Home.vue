@@ -51,6 +51,18 @@ const closeGeoError = () => {
   geoErrorText.value = null;
 };
 
+const resultMarker = ref(null);
+const plotResult = (coords) => {
+  map.removeLayer(geoMarker.value);
+  console.log(coords);
+  if (resultMarker.value ) {
+    map.removeLayer(resultMarker.value)
+  }
+  resultMarker.value = leaflet.marker([coords[1], coords[0]]).addTo(map);
+  map.setView([coords[1], coords[0]], 10);
+  console.log(sessionStorage)
+};
+
 onMounted(() => {
 
 map = leaflet.map('map', {zoomAnimation: false}).setView([45.766667, 4.834395], 8);
@@ -78,7 +90,7 @@ getGeoLocation();
 <template>
   <div class="h-screen relative">
     <GeoErrorModal v-if="geoError" :geoErrorText="geoErrorText" @closeGeoError="closeGeoError" />
-    <MapFeatures :coords="coords" :fetchCoords="fetchCoords" @getGeoLocation="getGeoLocation" />
+    <MapFeatures :coords="coords" :fetchCoords="fetchCoords" @getGeoLocation="getGeoLocation" @plotResult="plotResult"/>
     <div id="map" class="h-full z-[1]">
     </div>
   </div>
