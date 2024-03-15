@@ -52,6 +52,8 @@ const search = () => {
             let params = new URLSearchParams({
                 fuzzyMatch: 'true',
                 language: "fr",
+                types: 'address',
+                country: 'fr',
                 limit: 10,
                 proximity: props.coords ? `${props.coords.lng},${props.coords.lat}` : null,
             });
