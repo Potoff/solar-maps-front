@@ -52,8 +52,10 @@ const search = () => {
             let params = new URLSearchParams({
                 fuzzyMatch: 'true',
                 language: "fr",
+                types: 'address',
+                country: 'fr',
                 limit: 10,
-                //proximity: props.coords ? `${props.coords.lng},${props.coords.lat}` : null,
+                // proximity: props.coords ? `${props.coords.lng},${props.coords.lat}` : null,
             });
             let getData = await axios.get(`https://w7lolfzqqf.execute-api.us-east-2.amazonaws.com/dev/api/search/${searchQuery.value}?${params}`);
             searchData.value = getData.data.features;
