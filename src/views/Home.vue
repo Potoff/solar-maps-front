@@ -72,7 +72,11 @@ const plotResult = (coords) => {
     latitude: coords[1],
     longitude: coords[0]
   }
-  axios.post('https://w7lolfzqqf.execute-api.us-east-2.amazonaws.com/dev/api/buildingInsights', postData)
+  axios.post(`https://w7lolfzqqf.execute-api.us-east-2.amazonaws.com/dev/api/buildingInsights`, postData, {
+    headers: {
+      'X-API-KEY': import.meta.env.VITE_X_API_KEY
+    }
+  })
     .then((response) => {
       console.log(response.data);
     })
