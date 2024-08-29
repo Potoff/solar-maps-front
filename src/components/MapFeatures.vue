@@ -48,6 +48,7 @@ let props = defineProps(['coords', 'fetchCoords'])
 let emit = defineEmits(['plotResult'])
 
 
+
 const search = () => {
     clearTimeout(queryTimeout.value);
     searchData.value = null;
@@ -70,7 +71,15 @@ const search = () => {
 
 const selectResult = (result) => {
     selectedResult.value = result;
-    emit('plotResult', result.geometry.coordinates);
+    console.log(result)
+    console.log(result.geometry.coordinates)
+    console.log(result.place_name_fr)
+    emit('plotResult', {
+        coordinates: result.geometry.coordinates,
+        address: result.place_name_fr // result name fr
+    });
+    searchQuery.value = null; // Clear the search input
 }
+
 
 </script>
