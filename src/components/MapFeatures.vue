@@ -21,11 +21,15 @@
                 </div>
             </div>
         </div>
+
+        <!--
         <div class="px-4 flex items-center shadow-lg rounded-md min-h-[45px]"
             :class="[props.coords ? 'bg-gray-600' : 'bg-white']" @click="$emit('getGeoLocation')">
             <i class="fa-solid fa-location-arrow text-white text-[18px]"
                 :class="[props.coords ? 'text-white' : 'text-gray-600', props.fetchCoords ? 'animate-ping' : '']"></i>
         </div>
+        -->
+
     </div>
 </template>
 
