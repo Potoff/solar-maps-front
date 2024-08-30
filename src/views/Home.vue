@@ -4,7 +4,8 @@ import { onMounted, ref, shallowRef } from 'vue';
 import GeoErrorModal from '../components/GeoErrorModal.vue';
 import MapFeatures from '../components/MapFeatures.vue';
 import axios from 'axios';
-import LoadingSpinner from '../components/LoadingSpinner.vue';
+import LoadingModalSpinner from '../components/LoadingModalSpinner.vue';
+
 let coords = ref(null);
 let fetchCoords = ref(null);
 let geoMarker = ref(null);
@@ -141,7 +142,8 @@ onMounted(() => {
   <div class="h-screen relative">
     <GeoErrorModal v-if="geoError" :geoErrorText="geoErrorText" @closeGeoError="closeGeoError" />
     <MapFeatures :coords="coords" :fetchCoords="fetchCoords" @plotResult="plotResult" />
+    <LoadingModalSpinner v-if="isSearching" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+
     <div id="map" class="h-full z-[1]"></div>
-    <LoadingSpinner v-if="isSearching" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[2]" />
   </div>
 </template>
