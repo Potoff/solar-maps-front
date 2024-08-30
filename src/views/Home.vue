@@ -5,6 +5,7 @@ import GeoErrorModal from '../components/GeoErrorModal.vue';
 import MapFeatures from '../components/MapFeatures.vue';
 import axios from 'axios';
 import LoadingModalSpinner from '../components/LoadingModalSpinner.vue';
+import ResponseApiModal from '../components/ResponseApiModal.vue'; // Import the new component
 
 let coords = ref(null);
 let fetchCoords = ref(null);
@@ -13,6 +14,8 @@ let geoError = ref(null);
 let geoErrorText = ref(null);
 let map;
 let isSearching = ref(false);
+let responseDataApi = ref(null);
+
 
 //const getGeoLocation = () => {
 //  if (!coords.value) {
@@ -95,6 +98,7 @@ const plotResult = async (coordinatesAdress) => {
     .then((response) => {
       console.log(response.data);
       isSearching.value = false; // Stop the loader
+      responseDataApi.value = response.data; // Store the response data
       console.log("loader off")
     })
     .catch((error) => {
@@ -143,6 +147,7 @@ onMounted(() => {
     <GeoErrorModal v-if="geoError" :geoErrorText="geoErrorText" @closeGeoError="closeGeoError" />
     <MapFeatures :coords="coords" :fetchCoords="fetchCoords" @plotResult="plotResult" />
     <LoadingModalSpinner v-if="isSearching" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+    <ResponseApiModal v-if="responseDataApi" :responseData="responseDataApi" />
 
     <div id="map" class="h-full z-[1]"></div>
   </div>
