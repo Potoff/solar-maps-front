@@ -138,7 +138,9 @@ onMounted(() => {
 });
 
 
-
+const closeModal = () => {
+  responseDataApi.value = null;
+};
 
 </script>
 
@@ -147,7 +149,7 @@ onMounted(() => {
     <GeoErrorModal v-if="geoError" :geoErrorText="geoErrorText" @closeGeoError="closeGeoError" />
     <MapFeatures :coords="coords" :fetchCoords="fetchCoords" @plotResult="plotResult" />
     <LoadingModalSpinner v-if="isSearching" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-    <ResponseApiModal v-if="responseDataApi" :responseData="responseDataApi" />
+    <ResponseApiModal v-if="responseDataApi" :responseData="responseDataApi" @closeModal="closeModal"  />
 
     <div id="map" class="h-full z-[1]"></div>
   </div>
