@@ -5,7 +5,8 @@ import GeoErrorModal from '../components/GeoErrorModal.vue';
 import MapFeatures from '../components/MapFeatures.vue';
 import axios from 'axios';
 import LoadingModalSpinner from '../components/LoadingModalSpinner.vue';
-import ResponseApiModal from '../components/ResponseApiModal.vue'; // Import the new component
+import ResponseApiModal from '../components/ResponseApiModal.vue';
+import ConfirmModal from '../components/ConfirmModal.vue';
 
 let coords = ref(null);
 let fetchCoords = ref(null);
@@ -15,7 +16,8 @@ let geoErrorText = ref(null);
 let map;
 let isSearching = ref(false);
 let responseDataApi = ref(null);
-
+let showModal = ref(false);
+let modalAddress = ref('');
 
 //const getGeoLocation = () => {
 //  if (!coords.value) {
@@ -73,24 +75,25 @@ const plotResult = async (coordinatesAdress) => {
   sessionCoords.lat = coords[1];
   sessionCoords.lng = coords[0];
   sessionStorage.setItem('coords', JSON.stringify(sessionCoords));
- 
-  await new Promise(resolve => setTimeout(resolve, 1500)); // Delay for 1.2 seconds
+
+  //await new Promise(resolve => setTimeout(resolve, 1500)); // Delay for 1.2 seconds
+
+  modalAddress.value = coordinatesAdress.address;
+  showModal.value = true;
 
 
-  // Display a confirmation alert
-  const isConfirmed = window.confirm(`Votre toiture correspond elle bien à cette adresse  ? ${address}`);
+};
 
-  // If the user confirms, make the API call
-  if (isConfirmed) {
-
-    isSearching.value = true; // Start the loader
-    console.log("loader on")
-
-    const postData = {
+const handleConfirm = () => {
+  console.log("lauch api")
+  showModal.value = false;
+  isSearching.value = true;
+  // ... API call code ...
+  const postData = {
       latitude: coords[1],
       longitude: coords[0]
     }
-    await axios.post(`https://w7lolfzqqf.execute-api.us-east-2.amazonaws.com/dev/api/buildingInsights`, postData, {
+     axios.post(`https://w7lolfzqqf.execute-api.us-east-2.amazonaws.com/dev/api/buildingInsights`, postData, {
       headers: {
         'X-API-KEY': import.meta.env.VITE_X_API_KEY
       }
@@ -106,12 +109,12 @@ const plotResult = async (coordinatesAdress) => {
       isSearching.value = false; // Stop the loader
       console.log("loader off")
     });
-  } else {
-    isSearching.value = false; // Stop the loader
-    console.log("loader off")
   }
-};
 
+const handleCancel = () => {
+  showModal.value = false;
+  isSearching.value = false;
+};
 
 onMounted(() => {
 
@@ -146,6 +149,12 @@ const closeModal = () => {
 
 <template>
   <div class="h-screen relative">
+    <ConfirmModal
+    v-if="showModal"
+    :address="modalAddress"
+    @handleConfirm="handleConfirm"
+    @handleCancel="handleCancel"
+    />
     <GeoErrorModal v-if="geoError" :geoErrorText="geoErrorText" @closeGeoError="closeGeoError" />
     <MapFeatures :coords="coords" :fetchCoords="fetchCoords" @plotResult="plotResult" />
     <LoadingModalSpinner v-if="isSearching" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
