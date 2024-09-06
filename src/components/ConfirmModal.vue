@@ -7,7 +7,7 @@
                     <h3 class="text-lg leading-6 font-medium text-gray-900">Votre toiture correspond-elle bien à cette adresse ?</h3>
                     <p class="mt-2 text-m text-gray-500">{{ address }}</p>
                     <div class="flex justify-center mt-4">
-                        <button @click="handleConfirm" class="bg-orange-500 text-white px-4 py-2 rounded mr-2">Oui</button>
+                        <button @click="$emit('handleConfirm', coords)" class="bg-orange-500 text-white px-4 py-2 rounded mr-2">Oui</button>
                         <button @click="handleCancel" class="bg-orange-500 text-white px-4 py-2 rounded">Non</button>
                 </div>
             </div>

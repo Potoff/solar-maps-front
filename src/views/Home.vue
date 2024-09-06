@@ -78,7 +78,7 @@ const plotResult = async (coordinatesAdress) => {
 
   //await new Promise(resolve => setTimeout(resolve, 1500)); // Delay for 1.2 seconds
 
-  modalAddress.value = coordinatesAdress.address;
+  modalAddress.value = address;
   showModal.value = true;
 
 
@@ -86,6 +86,8 @@ const plotResult = async (coordinatesAdress) => {
 
 const handleConfirm = () => {
   console.log("lauch api")
+  console.log(coords.value)
+  console.log(coords)
   showModal.value = false;
   isSearching.value = true;
   // ... API call code ...
@@ -135,14 +137,32 @@ onMounted(() => {
   // Replace the getGeoLocation function
 
   coords.value = [45.766667, 4.834395]; // Default coordinates Init
+  console.log(coords.value)
   fetchCoords.value = true;
   map.setView(coords.value, 10);
   geoMarker.value = leaflet.marker(coords.value).addTo(map);
+
+
+  map.on('click', function(e) {
+    let clickedCoords = e.latlng;
+    if (resultMarker.value) {
+      map.removeLayer(resultMarker.value);
+    }
+    resultMarker.value = leaflet.marker([clickedCoords.lat, clickedCoords.lng]).addTo(map);
+    coords.value = [clickedCoords.lng,clickedCoords.lat];
+    showModal.value = true;
+    console.log(coords.value)
+    plotResult({coordinates:coords.value, adresse:''})
+
+  });
+
 });
 
 
 const closeModal = () => {
   responseDataApi.value = null;
+  console.log(coords)
+  console.log(coords.value)
 };
 
 </script>
@@ -152,6 +172,7 @@ const closeModal = () => {
     <ConfirmModal
     v-if="showModal"
     :address="modalAddress"
+    :coords="coords"
     @handleConfirm="handleConfirm"
     @handleCancel="handleCancel"
     />
